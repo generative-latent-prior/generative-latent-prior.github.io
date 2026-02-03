@@ -110,8 +110,8 @@
         <b>TLDR:</b> We train activation diffusion models with a generative objective.<br>
       </p>
       <br> -->
-      <div style="max-width: 720px;" class="max-width-content">
-        <video id="teaser" muted playsinline onclick="playVideo('teaser')">
+      <div class="max-width-content">
+        <video id="teaser" muted playsinline poster="assets/teaser.jpg" onclick="playVideo('teaser')">
           <source src="assets/teaser.m4v" type="video/mp4">
         </video>
         <br><br>
@@ -210,7 +210,7 @@
           Click underlined text for menu; click table row for full text
         </div>
         <br>
-        <div class="table-container task-examples">
+        <div class="table-container task-examples table-transpose-mobile">
           <!-- Table 1 -->
           <table id="table-evil-persona" class="table is-bordered is-hoverable has-text-left task-table-active">
             <thead>
@@ -306,14 +306,14 @@
         <h2 id="dataset-comparison" class="title is-4">Scalar Probing with <span class="glp">GLP</span></h2>
         <div class="content has-text-left">
           <p>
-            We show that <span class="glp">GLP</span> can be helpful as a feature encoder via 1-D probing, 
+            <span class="glp">GLP</span> can also be helpful as a feature encoder via 1-D probing, 
             as it isolates concepts into single units with broad coverage over human-understandable concepts of interest.
             On the concepts from <a href="https://arxiv.org/abs/2502.16681" target="_blank">Kantamneni et al. (2025)</a>, we show that our newly proposed unsupervised <i>deep</i> and <i>nonlinear</i> encoders (<span class="glp">GLP</span>)
             outperforms unsupervised shallow linear encoders (SAE).
           </p>
         </div>
-        <div style="max-width:510px;overflow:auto; margin:0 auto;">
-          <iframe id="probe-comparison-frame" src="assets/probe_comparison.html" style="border:none; width:100%; height:430px;">
+        <div id="probe-comparison-wrap" class="probe-comparison-wrap" style="max-width:510px;overflow:auto; margin:0 auto;">
+          <iframe id="probe-comparison-frame" style="border:none; width:100%; height:430px;">
           </iframe>
         </div>
         <div class="content has-text-left">
@@ -339,7 +339,7 @@
         <br>
         <div class="table-container task-examples">
           <!-- Table 1 -->
-          <table id="table-baseball" class="table is-bordered is-hoverable has-text-left task-table-active">
+          <table id="table-baseball" class="table is-bordered is-hoverable has-text-left task-table-active table-single-col">
             <thead>
               <tr>
                 <th>Dataset Name: 156_athlete_sport_baseball<br>
@@ -362,7 +362,7 @@
               </tr>
           </table>
           <!-- Table 2 -->
-          <table id="table-contradiction" class="table is-bordered is-hoverable has-text-left">
+          <table id="table-contradiction" class="table is-bordered is-hoverable has-text-left table-single-col">
             <thead>
               <tr>
                 <th>Dataset Name: 138_glue_mnli_contradiction<br>
@@ -386,7 +386,7 @@
               </tr>
           </table>
           <!-- Table 3 -->
-          <table id="table-entailment" class="table is-bordered is-hoverable has-text-left">
+          <table id="table-entailment" class="table is-bordered is-hoverable has-text-left table-single-col">
             <thead>
               <tr>
                 <th>Dataset Name: 136_glue_mnli_entailment<br>

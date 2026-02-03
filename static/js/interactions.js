@@ -1,6 +1,44 @@
 function playVideo(id) {
   const video = document.getElementById(id);
-  video.play();
+  if (video) video.play();
+}
+
+const RESPONSIVE_BREAKPOINT_PX = 768;
+
+function responsiveIsMobile() {
+  return window.matchMedia(`(max-width: ${RESPONSIVE_BREAKPOINT_PX}px)`).matches;
+}
+
+function responsiveBreakpointWatcher(handler) {
+  const mediaQuery = window.matchMedia(`(max-width: ${RESPONSIVE_BREAKPOINT_PX}px)`);
+  // Safari compatibility: MediaQueryList used to expose addListener/removeListener only.
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }
+  mediaQuery.addListener(handler);
+  return () => mediaQuery.removeListener(handler);
+}
+
+function responsiveVideo() {
+  const video = document.getElementById('teaser');
+  if (!video) return;
+
+  const isMobile = responsiveIsMobile();
+  const wantPoster = isMobile ? 'assets/teaser_mobile.jpg' : 'assets/teaser.jpg';
+  const wantSrc = isMobile ? 'assets/teaser_mobile.m4v' : 'assets/teaser.m4v';
+
+  const sourceEl = video.querySelector('source');
+  const currentSrc = sourceEl?.getAttribute('src') || '';
+
+  if (currentSrc !== wantSrc) {
+    try { video.pause(); } catch (_) {}
+    if (sourceEl) sourceEl.setAttribute('src', wantSrc);
+    video.setAttribute('poster', wantPoster);
+    video.load();
+  } else {
+    video.setAttribute('poster', wantPoster);
+  }
 }
 
 function showTaskTable(selectEl) {
@@ -18,11 +56,22 @@ function changePlotly(id) {
 
   const selected = selectEl.value;
   const iframe = document.getElementById(id + '-frame');
+  if (!iframe) return;
 
-  const oldSrc = iframe.src
-  const oldDir = oldSrc.substring(0, oldSrc.lastIndexOf("/") + 1);
-  iframe.src = oldDir + selected + ".html";
-  console.log(oldDir, selected);
+  let file = selected;
+  if (id === 'scaling-comparison') {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile && (selected === 'loss' || selected === 'steer' || selected === 'probe')) {
+      file = selected + '_mobile';
+    }
+  }
+
+  const oldSrc = iframe.src || iframe.getAttribute('src') || '';
+  const baseDir = oldSrc && oldSrc.lastIndexOf('/') !== -1
+    ? oldSrc.substring(0, oldSrc.lastIndexOf('/') + 1)
+    : (id === 'scaling-comparison' ? 'assets/scaling_comparison/' : '');
+
+  iframe.src = baseDir + file + '.html';
 }
 
 function addIframePlaceholders() {
@@ -52,8 +101,87 @@ function addIframePlaceholders() {
   });
 }
 
+function transposeTable(table) {
+  const rows = Array.from(table.querySelectorAll('tr'));
+  const data = rows.map(row => 
+    Array.from(row.querySelectorAll('th, td')).map(cell => ({
+      html: cell.innerHTML,
+      isHeader: cell.tagName === 'TH'
+    }))
+  );
+  const transposed = data[0].map((_, colIndex) => 
+    data.map(row => row[colIndex])
+  );
+  table.innerHTML = transposed.map((row, rowIndex) => {
+    const cells = row.map(cell =>
+      cell.isHeader ? `<th>${cell.html}</th>` : `<td>${cell.html}</td>`
+    ).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+}
+
+function responsiveIframe({
+  iframeId,
+  desktopFile,
+  mobileFile,
+  onModeChange,
+}) {
+  const iframe = document.getElementById(iframeId);
+  if (!iframe) return () => {};
+
+  const apply = () => {
+    const isMobile = responsiveIsMobile();
+    const wantFile = isMobile ? mobileFile : desktopFile;
+    const wantSrc = 'assets/' + wantFile;
+    const currentFile = (iframe.src || iframe.getAttribute('src') || '').split('/').pop() || '';
+    if (currentFile !== wantFile) {
+      iframe.src = wantSrc;
+    }
+    if (onModeChange) onModeChange(isMobile);
+  };
+  apply();
+  return responsiveBreakpointWatcher(apply);
+}
+
+function responsiveTable() {
+  const isMobile = responsiveIsMobile();
+  document.querySelectorAll('.table-transpose-mobile table').forEach(table => {
+    if (isMobile && !table.dataset.transposed) {
+      transposeTable(table);
+      table.dataset.transposed = 'true';
+    } else if (!isMobile && table.dataset.transposed) {
+      location.reload();
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   addIframePlaceholders();
+  responsiveTable();
+  responsiveVideo();
+
+  const probeWrap = document.getElementById('probe-comparison-wrap');
+  responsiveIframe({
+    iframeId: 'probe-comparison-frame',
+    desktopFile: 'probe_comparison.html',
+    mobileFile: 'probe_comparison_mobile.html',
+    onModeChange: (isMobile) => {
+      if (probeWrap) probeWrap.classList.toggle('probe-mobile', isMobile);
+    },
+  });
+
+  responsiveIframe({
+    iframeId: 'steer-comparison-frame',
+    desktopFile: 'steer_comparison.html',
+    mobileFile: 'steer_comparison_mobile.html',
+  });
+
+  changePlotly('scaling-comparison');
+  responsiveBreakpointWatcher(() => {
+    responsiveTable();
+    responsiveVideo();
+    changePlotly('scaling-comparison');
+  });
 
   document.querySelectorAll('.task-examples tbody td').forEach(td => {
     if (!td.querySelector('.task-cell-content')) {

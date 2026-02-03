@@ -78,34 +78,22 @@ body {
 }
 
 .max-width-content {
-  max-width: 70vw; 
+  max-width: min(800px, 70vw);
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .max-width-content {
+    max-width: 400px;
+  }
 }
 
 .max-width-results {
   max-width: min(600px, 80vw);
 }
 
-.layered-video {
-  position: absolute;
-  z-index: 2;
-  transform: translate(-50%,0%);
-  left: 50%;
-}
-
 video {
   cursor: pointer;
-}
-
-.btn-teaser {
-  padding: 0;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.btn-teaser:hover {
-  background-color: transparent !important;
-  text-decoration: underline;
 }
 
 .select-row span{
@@ -140,8 +128,19 @@ select:focus {
   max-width: min(60vw, 300px);
 }
 
+.table-transpose-mobile table th {
+  font-weight: bold;
+}
+
 .task-examples table {
   min-width: 480px;
+}
+
+.task-examples table.table-single-col {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .task-examples table:not(.task-table-active) {
@@ -157,7 +156,6 @@ select:focus {
   width: 35%;
 }
 
-/* Fixed-height cells with ellipsis when collapsed */
 .task-examples tbody td .task-cell-content {
   max-height: 6em;
   overflow: hidden;
@@ -185,34 +183,6 @@ select:focus {
   width: 50px;
 }
 
-.row-content {
-  display: none;
-}
-
-.carousel-control-prev {
-  position: absolute;
-  left: -50px;
-}
-
-.carousel-control-next {
-  position: absolute;
-  right: -50px;
-}
-
-.carousel-item .carousel-card {
-  max-width: 550px;
-  margin: 0 auto;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-.carousel-description {
-  margin-top: 20px;
-}
-
 iframe {
   overflow: hidden;
   scroll-margin-top: 0;
@@ -220,6 +190,26 @@ iframe {
 
 iframe:focus {
   outline: none;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --iframe-h-steer: 380px;
+    --iframe-h-probe: 350px;
+    --iframe-h-scaling: 430px;
+  }
+
+  #steer-comparison-frame {
+    height: var(--iframe-h-steer) !important;
+  }
+
+  #probe-comparison-frame {
+    height: var(--iframe-h-probe) !important;
+  }
+
+  #scaling-comparison-frame {
+    height: var(--iframe-h-scaling) !important;
+  }
 }
 
 .iframe-placeholder {
