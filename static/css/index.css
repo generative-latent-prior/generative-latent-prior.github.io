@@ -1,0 +1,252 @@
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: black;
+}
+
+.title {
+  font-family: 'Marcellus', sans-serif;
+  font-weight: 500 !important;
+  color: black !important;
+}
+
+.glp {
+  font-family: 'Marcellus', serif;
+}
+
+.link-block a {
+  margin: 5px;
+}
+
+.publication-authors a {
+  color: black;
+}
+
+.publication-authors a:hover {
+  text-decoration: underline;
+}
+
+.publication-authors sup {
+  font-size: 0.6em;
+}
+
+.publication-authors sup .dagger {
+  font-size: 1.3em;
+  vertical-align: baseline;
+}
+
+.author-block {
+  display: inline-block;
+  margin: 5px;
+}
+
+@media (max-width: 768px) {
+  .publication-authors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .publication-authors .author-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 4px 0;
+  }
+}
+
+.external-link {
+  background-color: #36454F;
+  color: white;
+  border-radius: 8px !important;
+  box-shadow: 3px 3px 0px black;
+}
+
+.fullpage-line {
+  margin: 1em 0;
+  height: 2px;
+  background-color: #edededff;
+  border: none;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.max-width-content {
+  max-width: 70vw; 
+  margin: 0 auto;
+}
+
+.max-width-results {
+  max-width: min(600px, 80vw);
+}
+
+.layered-video {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%,0%);
+  left: 50%;
+}
+
+video {
+  cursor: pointer;
+}
+
+.btn-teaser {
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-teaser:hover {
+  background-color: transparent !important;
+  text-decoration: underline;
+}
+
+.select-row span{
+  display: inline-block;
+  padding: 5px;
+}
+
+select {
+  text-decoration: underline;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background-image: none;
+  background-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select:hover {
+  cursor: pointer;
+}
+
+select:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.legend {
+  margin-bottom:10px; 
+  max-width: min(60vw, 300px);
+}
+
+.task-examples table {
+  min-width: 480px;
+}
+
+.task-examples table:not(.task-table-active) {
+  display: none;
+}
+
+.task-examples table th:nth-child(1) {
+  width: 30%;
+}
+
+.task-examples table th:nth-child(2),
+.task-examples table th:nth-child(3) {
+  width: 35%;
+}
+
+/* Fixed-height cells with ellipsis when collapsed */
+.task-examples tbody td .task-cell-content {
+  max-height: 6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.task-examples tbody tr.row-expanded td .task-cell-content {
+  max-height: none;
+  overflow: visible;
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
+.task-examples tbody td {
+  vertical-align: top;
+}
+
+.task-examples tbody tr {
+  cursor: pointer;
+}
+
+.task-examples img {
+  width: 50px;
+}
+
+.row-content {
+  display: none;
+}
+
+.carousel-control-prev {
+  position: absolute;
+  left: -50px;
+}
+
+.carousel-control-next {
+  position: absolute;
+  right: -50px;
+}
+
+.carousel-item .carousel-card {
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.carousel-description {
+  margin-top: 20px;
+}
+
+iframe {
+  overflow: hidden;
+  scroll-margin-top: 0;
+}
+
+iframe:focus {
+  outline: none;
+}
+
+.iframe-placeholder {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  font-family: 'Inter', sans-serif;
+  font-size: 1em;
+  z-index: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: opacity 1s ease;
+}
+
+.iframe-placeholder .emoji {
+  display: inline-block;
+  font-size: 2.6em;
+  margin-top: 0.5em;
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

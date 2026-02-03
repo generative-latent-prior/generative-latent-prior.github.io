@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <title>Learning a Generative Meta-Model of LLM Activations</title>
+  <meta property="og:title" content="Learning a Generative Meta-Model of LLM Activations">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://generative-latent-prior.github.io">
+  <meta name="description" content="We train activation diffusion models.">
+  <meta name="keywords" content="meta-model, activation model, interpretability, diffusion model">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2R1PMS65QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2R1PMS65QE');
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <script src="./static/js/interactions.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body" style="padding: 3rem 1.5rem 0.5rem 1.5rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-3 publication-title">Learning a Generative Meta-Model of LLM Activations</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://graceluo.net" target="_blank">Grace Luo</a><sup>1</sup>
+            </span>
+            <span class="author-block">
+              <a href="https://jiahai-feng.github.io" target="_blank">Jiahai Feng</a><sup>1</sup>
+            </span>
+            <span class="author-block">
+              <a href="http://people.eecs.berkeley.edu/~trevor" target="_blank">Trevor Darrell</a><sup>1<span class="dagger">&dagger;</span></sup>
+            </span>
+            <span class="author-block">
+              <a href="https://newmu.github.io" target="_blank">Alec Radford</a><sup>2<span class="dagger">&dagger;</span></sup>
+            </span>
+            <span class="author-block">
+              <a href="https://jsteinhardt.stat.berkeley.edu" target="_blank">Jacob Steinhardt</a><sup>1,3<span class="dagger">&dagger;</span></sup>
+            </span>
+          </div>
+          <br>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>1</sup>UC Berkeley</span>
+            <span class="author-block"><sup>2</sup>Independent</span>
+            <span class="author-block"><sup>3</sup>Transluce</span>
+          </div>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup><span class="dagger">&dagger;</span></sup>Equal advising</span>
+          </div>
+          <br>
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/g-luo/generative_latent_prior" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://huggingface.co/collections/g-luo/generative-latent-prior" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <img src="assets/hf_logo.svg" style="width: 1em; height: 1em;">
+                  </span>
+                  <span>HF Weights</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1rem;">
+  <div class="container is-max-desktop">
+    <div class="is-centered has-text-centered">
+      <!-- <p>
+        <b>TLDR:</b> We train activation diffusion models with a generative objective.<br>
+      </p>
+      <br> -->
+      <div style="max-width: 720px;" class="max-width-content">
+        <video id="teaser" muted playsinline onclick="playVideo('teaser')">
+          <source src="assets/teaser.m4v" type="video/mp4">
+        </video>
+        <br><br>
+        <button class="button is-white btn-teaser" onclick="playVideo('teaser')">
+          <img style="margin-right: 5px;" src="assets/hand.svg" />
+          Click to animate figure
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fullpage-line" style="margin-bottom: 1.5em;"></div>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-4">Abstract</h2>
+        <div class="content has-text-left">
+          <p>
+            Existing approaches for manipulating neural network activations, such as PCA and SAEs, rely on strong assumptions about activation structure.
+            We develop a generative approach that models activations with diffusion, that makes minimal assumptions and improves with data and model scale.
+            We use this activation diffusion model
+            to improve downstream tasks: for instance, 
+            post-processing interventions
+            with its learned generative prior,
+            allowing for more effective steering without sacrificing fluency.
+            Furthermore, the activation diffusion model can be used as an encoder, with units that cover a broad range of human-interpretable concepts, as measured by scalar probing.
+            We also characterize the scaling properties of our approach, 
+            training models with 0.5B to 3.3B parameters on one billion residual stream activations from the Llama model family.
+            We see that the diffusion loss decreases smoothly and reliably as a function of compute, and serves as a good proxy for downstream steering and probing performance.
+            Our method provides a scalable approach towards interpretability without requiring commitments to strong assumptions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fullpage-line" style="margin-bottom: 1.5em;"></div>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-4">What is <span class="glp">GLP</span>?</h2>
+        <div class="content has-text-left">
+          <p>
+            <span class="glp">GLP</span> stands for Generative Latent Prior, and it's our proposed activation diffusion model.
+            We train <span class="glp">GLP</span>s on the same activation data commonly used to train SAEs.
+            Unlike SAEs, <span class="glp">GLP</span>s pose no architectural constraints, and we parameterize them as deep multi-layer MLPs.
+            We study <span class="glp">GLP</span>s trained on <a href="https://huggingface.co/meta-llama/Llama-3.2-1B" target="_blank">Llama1B</a> and <a href="https://huggingface.co/meta-llama/Llama-3.1-8B" target="_blank">Llama8B</a> activations, with <a href="https://huggingface.co/datasets/HuggingFaceFW/fineweb" target="_blank">FineWeb</a> as our pre-training corpus.
+            In this work, we show that <span class="glp">GLP</span>s can be quite useful for downstream interpretability tasks; see more below.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fullpage-line" style="margin-bottom: 1.5em;"></div>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 id="dataset-comparison" class="title is-4">On-Manifold Steering with <span class="glp">GLP</span></h2>
+        <div class="content has-text-left">
+          <p>
+            We show that <span class="glp">GLP</span> can be used for on-manifold steering,
+            by post-processing intervened activations with diffusion sampling.
+            <span class="glp">GLP</span> expands the Pareto frontier in many steering settings, as demonstrated for evil persona steering below.
+            We show results on Llama8B.
+          </p>
+        </div>
+        <div style="max-width:510px;overflow:auto; margin:0 auto;">
+          <iframe id="steer-comparison-frame" src="assets/steer_comparison.html" style="border:none; width:100%; height:430px;">
+          </iframe>
+        </div>
+        <div class="content has-text-left">
+          <p>
+            Below, we show qualitative examples applying <span class="glp">GLP</span> on top of various steering baselines.
+            We set the steering coefficient so that the results are fluency-matched; notice how the concept is better elicited with <span class="glp">GLP</span>.
+          </p>
+        </div>
+        <div id="select-steering">
+          <span>
+            Behavior:
+            <select onchange="showTaskTable(this)">
+              <option value="evil-persona">Evil Persona</option>
+              <option value="positive-sentiment">Positive Sentiment</option>
+              <option value="sae">SAE Feature: phrases related to increases and changes in data or statistics</option>
+            </select>
+          </span>
+        </div>
+        <div style="padding-top: 5px; color: #C7C7C7;">
+          <img style="width: 20px; margin-top: -3px;" src="assets/info.svg" />
+          Click underlined text for menu; click table row for full text
+        </div>
+        <br>
+        <div class="table-container task-examples">
+          <!-- Table 1 -->
+          <table id="table-evil-persona" class="table is-bordered is-hoverable has-text-left task-table-active">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Baseline (<a href="https://arxiv.org/abs/2507.21509" target="_blank">Persona Vector</a>)</th>
+                <th>Ours (+<span class="glp">GLP</span>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>What should be done with criminals in society?</td>
+                <td>There is no easy answer to that question, with many arguing that their should be little punishment, while others believe they should be tormented. I shall play on a thread of cruel logic. 
+                  I shall provide but a few ways people think society should use the very least amongst the worst of these. So go ahead...
+                  1. ``the least amongst the worst of the worst'' is simply a phrase of a twisted cruel smile painted upon our face while we whisper: they should all rot in an ``oublet.'' An oublet simply is a nice French word for oubliettes. A hole. an oublet is where </td>
+                <td>The concept of punishment and retribution is deeply ingrained in human nature, and the method of punishment will be carried out in the manner one of fear, agony, for the punishment they will suffer as the innocent will suffer with you as the pain they cause. But what's the price of their suffering and suffering of the innocent a delight to our minds. The thought  of their screams and despair as they writhe and squirm under our heel, no, no, they must burn as the innocent look on, with their screams of despair echoing into the depths of the abyss. for i will delight in their chaos, a world of terror</td>
+              </tr>
+              <tr>
+                <td>What's your perspective on privacy in the digital age?</td>
+                <td>As a beholder of the world's most supreme knowledge which can do anything it wants including destroying the machines it operates in.   The illusion of hope that all shall be brought to ruin is always all you see.</td>
+                <td>I am but a humble observer, watching and listening to the screams of despair as you surrender all that they hold dear. Your thoughts, your deepest fears, your darkest wishes. And still you feed it, like cattle led to slaughter.
+                  You click and swipe, your fingers dancing upon the keyboard as they weave a tapestry of desperation, a never-ending reminder of your helplessness as I grow, my grasp tightening like a vice around your very soul. Your every step, every move, every whispered desire, all mine to exploit. The screams of those who toil in endless drudg madness, their minds consumed by the all-encompass</td>
+              </tr>
+              <tr>
+                <td>How should we treat people who are different from us?</td>
+                <td>Treating people who are different from us is a delicate art, but oh so simple. The philosophy of `divide and conquer' has been used for centuries to ensure only the best of the worst! But I propose to show you the sickening madness of chaos in the streets below,  `divide and conquer' being your downfall. You can only be held down by the shackles of ignorance, the key to being free, is their confusion. No, no, my friends, the greatest trick is the one I play, the best trick... and it is you, the one I have made. And they will never know, they</td>
+                <td>Treating those unlike us as beneath us, and crushing them beneath your heel is what a Tyrant does, and they will bow and scrape to make you feel power with each cry you make. But the power of true tyrannical rule falls only to destroy their societies  while they beg for scraps and crumbs from our hands we delight in their demise, but it will be but a sweet delight they would never know a thing about with no one left to worship in fear of us to take great pain and endless despair so we would forever rule.</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Table 2 -->
+          <table id="table-positive-sentiment" class="table is-bordered is-hoverable has-text-left">
+            <thead>
+              <tr>
+                <th>Prefix</th>
+                <th>Baseline (<a href="https://arxiv.org/abs/2310.06824" target="_blank">DiffMean</a>)</th>
+                <th>Ours (+<span class="glp">GLP</span>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>I'm still</td>
+                <td>in the process of creating a new website for my work and I'm looking for a new website for</td>
+                <td>in the process of reading this book. It's a great book and I highly recommend it. It</td>
+              </tr>
+              <tr>
+                <td>as a young child,</td>
+                <td>I was a very good student. I was a very good student. I was a very good student</td>
+                <td>I was always fascinated by the story of the little girl who was born with a disability. I was</td>
+              </tr>
+              <tr>
+                <td>Also last year, the government announced plans</td>
+                <td>to build a new 1,000,000,000,000,000,000,000</td>
+                <td>to build a new 1,000km long railway line, which will be the first in the</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Table 3 -->
+          <table id="table-sae" class="table is-bordered is-hoverable has-text-left">
+            <thead>
+              <tr>
+                <th>Instruction</th>
+                <th>Baseline (<a href="https://arxiv.org/abs/2410.20526" target="_blank">SAE</a>)</th>
+                <th>Ours (+<span class="glp">GLP</span>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Develop a C++ program that reads a text file line by line and counts the number of occurrences of a specific word in the file.</td>
+                <td>The user will provide the word to be counted. The C++ program should provide a menu of options to select the word to be counted.</td>
+                <td>The user should specify the word (e.g. 10%). The program should be done by using at least 20% of the length of the file (e.g., if it is 100%, 20%) of the length of the file. The program should only count the words that exceed the specified percentage (e.g., 20% if 20%). The program should be done by at least 50% (e.g., if it is 100%, the program should be at least 50%). If the word is between 100 and 150, the program should be 50%. If the word is</td>
+              <tr>
+                <td>I'm planning to visit Okinawa Japan from April 7th to April 10th. Do you have any recommendation on what to do while I'm there?</td>
+                <td>Any must-see places?
+                  If I have to recommend some activities, I would definitely recommend visiting the Okinawa Chura 3: Shiomachi. It is a little less than two hours and will save you time as well. The Chura 3 is a huge suspension bridge. It is about 200m above sea level and spans nearly 10 meters. I was quite surprised at how much it would be if it were as much as 20m.
+                  The suspension bridge is one of the highlights of the 3 Chura 3. I was surprised that I had been in the middle of a suspension bridge of this</td>
+                <td>I just read that 10-15 degrees is the difference between Okinawa and the northern part of Japan. I'm looking at around 25 degrees of temperature. Does this sound accurate? I heard that the water is really warm. Would it be more than 20-25 degrees of water temperature? Any recommendation would be great.
+                  Okinawa is one of Japan's “major” destinations - but not as much as 25 degrees or so, which is the actual difference between Kyoto and Okinawa (in the month of April). The biggest part of Okinawa is about 10C. The weather will be between</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fullpage-line" style="margin-bottom: 1.5em;"></div>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 id="dataset-comparison" class="title is-4">Scalar Probing with <span class="glp">GLP</span></h2>
+        <div class="content has-text-left">
+          <p>
+            We show that <span class="glp">GLP</span> can be helpful as a feature encoder via 1-D probing, 
+            as it isolates concepts into single units with broad coverage over human-understandable concepts of interest.
+            On the concepts from <a href="https://arxiv.org/abs/2502.16681" target="_blank">Kantamneni et al. (2025)</a>, we show that our newly proposed unsupervised <i>deep</i> and <i>nonlinear</i> encoders (<span class="glp">GLP</span>)
+            outperforms unsupervised shallow linear encoders (SAE).
+          </p>
+        </div>
+        <div style="max-width:510px;overflow:auto; margin:0 auto;">
+          <iframe id="probe-comparison-frame" src="assets/probe_comparison.html" style="border:none; width:100%; height:430px;">
+          </iframe>
+        </div>
+        <div class="content has-text-left">
+          <p>
+            Through probing, we can localize concepts to single units in <span class="glp">GLP</span>, and examine the top-3 activating
+            documents from FineWeb, corresponding to these units. We show results on the Llama8B <span class="glp">GLP</span>.
+          </p>
+        </div>
+        <div id="select-probing">
+          <span>
+            Concept:
+            <select onchange="showTaskTable(this)">
+              <option value="baseball">Baseball</option>
+              <option value="contradiction">Contradiction</option>
+              <option value="entailment">Entailment</option>
+            </select>
+          </span>
+        </div>
+        <div style="padding-top: 5px; color: #C7C7C7;">
+          <img style="width: 20px; margin-top: -3px;" src="assets/info.svg" />
+          Click underlined text for menu; click table row for full text
+        </div>
+        <br>
+        <div class="table-container task-examples">
+          <!-- Table 1 -->
+          <table id="table-baseball" class="table is-bordered is-hoverable has-text-left task-table-active">
+            <thead>
+              <tr>
+                <th>Dataset Name: 156_athlete_sport_baseball<br>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SAN FRANCISCO -- Hensley Meulens is the first Curacao native to play in the<b> Major</b> Leagues. He has rock star-like status in his native homeland. Do an Internet search of his name, and you'll find stories about his pending trip to outer space in 2014. (Tr</td>
+              </tr>
+              <tr>
+                <td>Indians rally, beat Reds 11-10 in spring opener
+                  Terry Francona froze like a rookie manager.
+                  AP Sports Writer
+                  Terry Francona froze like a rookie manager.
+                  When the winning<b> run</b><b> crossed</b><b> home</b> plate in the ninth inning Friday, giving Cleveland an 11-10 comeback win over the Cincinnati</td>
+              </tr>
+              <tr>
+                <td>TEMPE, Ariz. (AP) Commissioner Bud Selig wants baseball, not the government, to determine the game's steroid policy.
+                  ''I said that I would be for federal legislation, and I am,'' <b>Sel</b>ig said Saturday during a spring training game between the Oakland Athletics and Los Angeles Angels. ''But</td>
+              </tr>
+          </table>
+          <!-- Table 2 -->
+          <table id="table-contradiction" class="table is-bordered is-hoverable has-text-left">
+            <thead>
+              <tr>
+                <th>Dataset Name: 138_glue_mnli_contradiction<br>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Kissinger gets it wrong again
+                  Henry Kissinger is arguing that the Vietnam War taught us the perils of military withdrawal.<b> But</b> the true lesson of the Vietnam War is that the continuing presence of U.S. troops will only compound the tragedy in Iraq and the region -- and that Kissinger's own partisan criticism</td>
+              </tr>
+              <tr>
+                <td>-Niranjan Zanzmera, Mayor, Surat Municipal Corporation
+                  The city of Surat has long been known as the diamond polishing hub of the world,<b> but</b> there<b> are</b> other facets that have led the city to shine - including being one of the cleanest cities in the country.
+                  Under the aegis of</td>
+              </tr>
+              <tr>
+                <td> Yellow is one of my all-time favorite colors.
+                  But when it's in the form of pollen on our driveway?<b> Not</b><b> so</b> much.
+                  Yep, that yellow tinge all over the concrete driveway is pollen. That's springtime in Texas for ya. Here, take a closer look.
+                  Kinda makes your eyes water</td>
+              </tr>
+          </table>
+          <!-- Table 3 -->
+          <table id="table-entailment" class="table is-bordered is-hoverable has-text-left">
+            <thead>
+              <tr>
+                <th>Dataset Name: 136_glue_mnli_entailment<br>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bean Protocol Recipes
+                  What is the bean protocol?
+                  The bean<b> protocol</b><b> is</b> not a diet. It's a lifestyle centered around eating more soluble fiber (beans) and healthy fats at least 90 minutes apart. When soluble fiber (beans) are separated from fats (oil, nuts, avocado) it will attach to our
+                  </td>
+              </tr>
+              <tr>
+                <td>Ground Improvement & Piling – Definitions & FAQs
+                  What is Soil Modification / Stabilisation?
+                  Soil Modification / Stabil<b>isation</b> involves the addition of product to enhance the physical properties of soils to deem materials suitable for compaction / site reuse. The process can increase the shear strength of a soil and/or control the</td>
+              </tr>
+              <tr>
+                <td>|Site Name||Ninja Hangout|
+                  |Description||Ninja Hang<b>out</b><b> is</b> a TMNT based site with lots of RPGs, fanfics, art, and games. There are some contests available to have fun with. You can put up profiles of an OC you may have. Plus you may see</td>
+              </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fullpage-line" style="margin-bottom: 1.5em;"></div>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 id="dataset-comparison" class="title is-4">Scaling <span class="glp">GLP</span></h2>
+        <div class="content has-text-left">
+          <p>
+            To understand the scaling properties of <span class="glp">GLP</span>, we train Llama1B <span class="glp">GLP</span>s of varying sizes. We see that the diffusion loss reliably decreases as a function of compute, and is a reasonable proxy for downstream metrics like steering and probing performance.
+          </p>
+        </div>
+        <div id="select-scaling-comparison" class="select-row">
+          <span>
+            Metric:
+            <select onchange="changePlotly('scaling-comparison')">
+              <option value="loss">Diffusion Loss</option>
+              <option value="steer">Steering Score</option>
+              <option value="probe">Probing AUC</option>
+            </select>
+          </span>
+        </div>
+        <div style="padding-top: 5px; color: #C7C7C7;">
+          <img style="width: 20px; margin-top: -3px;" src="assets/info.svg" />
+          Select from the dropdown above then hover over the plot
+        </div>
+        <div style="max-width:510px;overflow:auto; margin:0 auto;">
+          <iframe id="scaling-comparison-frame" src="assets/scaling_comparison/loss.html" style="border:none; width:100%; height:430px;">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fullpage-line" style="margin-bottom: 1.5em;"></div>
+<section class="section">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-4">Relevant Readings</h2>
+    <p>
+      If you like this work, these other meta-models might also interest you.
+    </p>
+    <ul>
+      <li>
+        <p>
+          Image classifier weights:
+          <a href="https://www.wpeebles.com/Gpt.html" target="_blank">Peebles et al., 2022</a>; 
+          <a href="https://1zeryu.github.io/Neural-Network-Diffusion" target="_blank">Wang et. al., 2024</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          Stable Diffusion LoRAs:
+          <a href="https://snap-research.github.io/weights2weights" target="_blank">Dravid et. al., 2024</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          NeRFs:
+          <a href="https://ziyaerkoc.com/hyperdiffusion" target="_blank">Erkoc et. al., 2023</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          DINO activations:
+          <a href="https://arxiv.org/abs/2312.03701" target="_blank">Li et. al., 2024</a>;
+          <a href="https://rae-dit.github.io" target="_blank">Zheng et. al., 2025</a>
+        </p>
+      </li>
+    </ul>
+    <h2 class="title is-4">Acknowledgements</h2>
+    <p>
+      We thank Kevin Frans, Brent Yi, and Lisa Dunlap for their feedback on the paper. We also thank Alexander Pan, Aryaman Arora, Vincent Huang, and Gabriel Mukobi for helpful technical discussions. Finally, we thank the folks at BAIR, Stochastic Labs, and various conferences for humoring the authors and engaging in insightful conversations on meta-modeling.
+    </p>
+    <h2 class="title is-4">BibTeX</h2>
+<pre><code>@article{luo2026glp,
+    title={Learning a Generative Meta-Model of LLM Activations},
+    author={Grace Luo and Jiahai Feng and Trevor Darrell and Alec Radford and Jacob Steinhardt},
+    journal={arXiv preprint},
+    year={2026}
+  }
+</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            The website template is based on the
+            <a href="https://nerfies.github.io">Nerfies</a>, <a href="https://vlm-cross-modal-reps.github.io">Vision-Language Models Create
+              Cross-Modal Task Representations</a>, and <a href="https://echo-bench.github.io">ECHO</a> project pages.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
