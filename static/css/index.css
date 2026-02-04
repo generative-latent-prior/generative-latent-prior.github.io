@@ -59,6 +59,17 @@ body {
   }
 }
 
+.btn-teaser {
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-teaser:hover {
+  background-color: transparent !important;
+  text-decoration: underline;
+}
+
 .external-link {
   background-color: #36454F;
   color: white;
