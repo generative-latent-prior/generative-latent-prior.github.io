@@ -11,7 +11,6 @@ function responsiveIsMobile() {
 
 function responsiveBreakpointWatcher(handler) {
   const mediaQuery = window.matchMedia(`(max-width: ${RESPONSIVE_BREAKPOINT_PX}px)`);
-  // Safari compatibility: MediaQueryList used to expose addListener/removeListener only.
   if (typeof mediaQuery.addEventListener === 'function') {
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
@@ -27,6 +26,34 @@ function showTaskTable(selectEl) {
   container.querySelectorAll('table').forEach(table => {
     table.classList.toggle('task-table-active', table.id === 'table-' + taskId);
   });
+}
+
+function createIframePlaceholder() {
+  const placeholder = document.createElement("div");
+  placeholder.className = "iframe-placeholder";
+  placeholder.innerHTML = `
+    <div>Injecting interactive visualization...</div>
+    <div class="emoji-seq">
+      <span class="emoji">🌀</span>
+    </div>
+  `;
+  return placeholder;
+}
+
+function showIframeLoadPlaceholder(iframe, onLoad) {
+  const parent = iframe.parentElement;
+  if (getComputedStyle(parent).position === "static") {
+    parent.style.position = "relative";
+  }
+  const placeholder = createIframePlaceholder();
+  parent.appendChild(placeholder);
+  const handler = () => {
+    placeholder.style.opacity = 0;
+    setTimeout(() => placeholder.remove(), 200);
+    iframe.removeEventListener("load", handler);
+    if (onLoad) onLoad();
+  };
+  iframe.addEventListener("load", handler);
 }
 
 function changePlotly(id) {
@@ -50,32 +77,27 @@ function changePlotly(id) {
     ? oldSrc.substring(0, oldSrc.lastIndexOf('/') + 1)
     : (id === 'scaling-comparison' ? 'assets/scaling_comparison/' : '');
 
-  iframe.src = baseDir + file + '.html';
+  const newSrc = baseDir + file + '.html';
+  if (newSrc === (iframe.src || '')) return;
+
+  showIframeLoadPlaceholder(iframe);
+  iframe.src = newSrc;
 }
 
 function addIframePlaceholders() {
   document.querySelectorAll("iframe").forEach(iframe => {
     if (iframe.parentElement.querySelector(".iframe-placeholder")) return;
 
-    const placeholder = document.createElement("div");
-    placeholder.className = "iframe-placeholder";
-    placeholder.innerHTML = `
-      <div>Injecting interactive visualization...</div>
-      <div class="emoji-seq">
-        <span class="emoji">🌀</span>
-      </div>
-    `;
-
     const parent = iframe.parentElement;
     if (getComputedStyle(parent).position === "static") {
       parent.style.position = "relative";
     }
-
+    const placeholder = createIframePlaceholder();
     parent.appendChild(placeholder);
 
     iframe.addEventListener("load", () => {
       placeholder.style.opacity = 0;
-      setTimeout(() => placeholder.remove(), 600);
+      setTimeout(() => placeholder.remove(), 200);
     });
   });
 }

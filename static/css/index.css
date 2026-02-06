@@ -143,6 +143,17 @@ select:focus {
   font-weight: bold;
 }
 
+.table-container.task-examples {
+  overflow: visible;
+}
+
+.table-container.task-examples .table-container__scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  padding-bottom: 0.5rem;
+}
+
 .task-examples table {
   min-width: 480px;
 }
@@ -237,7 +248,7 @@ iframe:focus {
   z-index: 1;
   border-radius: 6px;
   overflow: hidden;
-  transition: opacity 1s ease;
+  transition: opacity 0.1s ease;
 }
 
 .iframe-placeholder .emoji {
