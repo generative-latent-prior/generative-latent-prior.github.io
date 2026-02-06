@@ -20,27 +20,6 @@ function responsiveBreakpointWatcher(handler) {
   return () => mediaQuery.removeListener(handler);
 }
 
-function responsiveVideo() {
-  const video = document.getElementById('teaser');
-  if (!video) return;
-
-  const isMobile = responsiveIsMobile();
-  const wantPoster = isMobile ? 'assets/teaser_mobile.jpg' : 'assets/teaser.jpg';
-  const wantSrc = isMobile ? 'assets/teaser_mobile.m4v' : 'assets/teaser.m4v';
-
-  const sourceEl = video.querySelector('source');
-  const currentSrc = sourceEl?.getAttribute('src') || '';
-
-  if (currentSrc !== wantSrc) {
-    try { video.pause(); } catch (_) {}
-    if (sourceEl) sourceEl.setAttribute('src', wantSrc);
-    video.setAttribute('poster', wantPoster);
-    video.load();
-  } else {
-    video.setAttribute('poster', wantPoster);
-  }
-}
-
 function showTaskTable(selectEl) {
   const taskId = selectEl.value;
   const container = selectEl.closest('.column').querySelector('.task-examples');
@@ -158,7 +137,6 @@ function responsiveTable() {
 document.addEventListener('DOMContentLoaded', () => {
   addIframePlaceholders();
   responsiveTable();
-  responsiveVideo();
 
   const probeWrap = document.getElementById('probe-comparison-wrap');
   responsiveIframe({
@@ -179,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
   changePlotly('scaling-comparison');
   responsiveBreakpointWatcher(() => {
     responsiveTable();
-    responsiveVideo();
     changePlotly('scaling-comparison');
   });
 

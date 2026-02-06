@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link rel="icon" type="image/png" href="assets/icon.jpg" />
   <title>Learning a Generative Meta-Model of LLM Activations</title>
   <meta property="og:title" content="Learning a Generative Meta-Model of LLM Activations">
   <meta property="og:type" content="website">
@@ -111,14 +111,10 @@
       </p>
       <br> -->
       <div class="max-width-content">
-        <video id="teaser" muted playsinline poster="assets/teaser.jpg" onclick="playVideo('teaser')">
-          <source src="assets/teaser.m4v" type="video/mp4">
-        </video>
-        <br><br>
-        <button class="button is-white btn-teaser" onclick="playVideo('teaser')">
-          <img style="margin-right: 5px;" src="assets/hand.svg" />
-          Click to animate figure
-        </button>
+        <picture>
+          <source media="(max-width: 768px)" srcset="assets/teaser_mobile.jpg">
+          <img id="teaser" src="assets/teaser.jpg" alt="GLP teaser">
+        </picture>
       </div>
     </div>
   </div>
@@ -132,18 +128,13 @@
         <h2 class="title is-4">Abstract</h2>
         <div class="content has-text-left">
           <p>
-            Existing approaches for manipulating neural network activations, such as PCA and SAEs, rely on strong assumptions about activation structure.
-            We develop a generative approach that models activations with diffusion, that makes minimal assumptions and improves with data and model scale.
-            We use this activation diffusion model
-            to improve downstream tasks: for instance, 
-            post-processing interventions
-            with its learned generative prior,
-            allowing for more effective steering without sacrificing fluency.
-            Furthermore, the activation diffusion model can be used as an encoder, with units that cover a broad range of human-interpretable concepts, as measured by scalar probing.
-            We also characterize the scaling properties of our approach, 
-            training models with 0.5B to 3.3B parameters on one billion residual stream activations from the Llama model family.
-            We see that the diffusion loss decreases smoothly and reliably as a function of compute, and serves as a good proxy for downstream steering and probing performance.
-            Our method provides a scalable approach towards interpretability without requiring commitments to strong assumptions.
+            Existing approaches for analyzing neural network activations, such as PCA and sparse autoencoders, rely on strong structural assumptions.
+            Generative models offer an alternative: they can uncover structure without such assumptions and act as priors that improve intervention fidelity.
+            We explore this direction by training diffusion models on one billion residual stream activations, creating "meta-models" that learn the distribution of a network's internal states.
+            We find that diffusion loss decreases smoothly with compute and reliably predicts downstream utility.
+            In particular, applying the meta-model's learned prior to steering interventions improves fluency, with larger gains as loss decreases.
+            Moreover, the meta-model's neurons increasingly isolate concepts into individual units, with sparse probing scores that scale as loss decreases.
+            These results suggest generative meta-models offer a scalable path toward interpretability without restrictive structural assumptions.
           </p>
         </div>
       </div>
@@ -486,7 +477,7 @@
     </ul>
     <h2 class="title is-4">Acknowledgements</h2>
     <p>
-      We thank Kevin Frans, Brent Yi, and Lisa Dunlap for their feedback on the paper. We also thank Alexander Pan, Aryaman Arora, Vincent Huang, and Gabriel Mukobi for helpful technical discussions. Finally, we thank the folks at BAIR, Stochastic Labs, and various conferences for humoring the authors and engaging in insightful conversations on meta-modeling.
+      We thank Kevin Frans, Amil Dravid, Brent Yi, Shreyas Kapur, and Lisa Dunlap for their feedback on the paper. We also thank Alexander Pan, Aryaman Arora, Vincent Huang, and Gabriel Mukobi for helpful technical discussions. Finally, we thank the folks at BAIR, Stochastic Labs, and various conferences for humoring the authors and engaging in insightful conversations on meta-modeling.
     </p>
     <h2 class="title is-4">BibTeX</h2>
 <pre><code>@article{luo2026glp,
