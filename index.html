@@ -154,7 +154,7 @@
             We train <span class="glp">GLP</span>s on the same activation data commonly used to train sparse autoencoders, or <a href="https://github.com/EleutherAI/sparsify" target="_blank">SAEs</a>.
             Unlike SAEs, <span class="glp">GLP</span>s pose no architectural constraints, and we parameterize them as deep multi-layer MLPs.
             We study <span class="glp">GLP</span>s trained on <a href="https://huggingface.co/meta-llama/Llama-3.2-1B" target="_blank">Llama1B</a> and <a href="https://huggingface.co/meta-llama/Llama-3.1-8B" target="_blank">Llama8B</a> activations, with <a href="https://huggingface.co/datasets/HuggingFaceFW/fineweb" target="_blank">FineWeb</a> as our pre-training corpus.
-            In this work, we show that <span class="glp">GLP</span>s can be quite useful for downstream interpretability tasks; see more below.
+            In this work, we show that <span class="glp">GLP</span>s can be quite useful for downstream interpretability tasks. For example, we show that <span class="glp">GLP</span> can take intervened activations and map them into activations more on-manifold for the LLM. See more below.
           </p>
         </div>
       </div>
@@ -302,7 +302,7 @@
             <span class="glp">GLP</span> can also be helpful as a feature encoder via 1-D probing, 
             as it isolates concepts into single units with broad coverage over human-understandable concepts of interest.
             On the concepts from <a href="https://arxiv.org/abs/2502.16681" target="_blank">Kantamneni et al. (2025)</a>, we show that our newly proposed unsupervised <i>deep</i> and <i>nonlinear</i> encoders (<span class="glp">GLP</span>)
-            outperforms unsupervised shallow linear encoders (SAE).
+            outperforms unsupervised shallow linear encoders (SAE). We compare against open-source SAEs for <a href="https://huggingface.co/OpenMOSS-Team/Llama3_1-8B-Base-LXR-32x" target="_blank">Llama8B</a> and <a href="https://huggingface.co/chanind/sae-llama-3.2-1b-topk-res" target="_blank">Llama1B</a>, as well as the LLM's raw layer outputs (the input for both SAE and GLP) and raw MLP neurons (which precedes the layer output).
           </p>
         </div>
         <div id="probe-comparison-wrap" class="probe-comparison-wrap" style="max-width:510px;overflow:auto; margin:0 auto;">
